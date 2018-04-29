@@ -1,0 +1,11 @@
+  #site-header {
+    text-decoration: none;
+    color: grey;
+  }
+
+
+  #site-header > a {
+    text-decoration: none;
+    color: #607d8b;
+    font-weight: 400;
+  }

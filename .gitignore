@@ -1,0 +1,4 @@
+.idea
+bin/
+frontend/dist/
+frontend/config/prod.env.js

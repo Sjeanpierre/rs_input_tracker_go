@@ -1,0 +1,23 @@
+  #keep main .container {
+    height: 660px;
+  }
+
+  .navigation-drawer__border {
+    display: none;
+  }
+
+  .text {
+    font-weight: 400;
+  }
+
+  .info-list .list__tile__title {
+    text-align: center;
+    margin: auto;
+  }
+
+
+  .info-list .list__tile__content > i {
+    text-align: center;
+    margin: auto;
+  }
+
