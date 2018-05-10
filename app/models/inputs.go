@@ -1,6 +1,7 @@
-package main
+package models
 
 import (
+	"strconv"
 	"time"
 	"strings"
 	"log"
@@ -12,9 +13,9 @@ type Input struct {
 	ID        int       `json:"-"`
 	AccountID int       `json:"account_id"`
 	ArrayID   int       `json:"array_id"`
-	Type      string    `json:"type"`
+	Type      string    `gorm:"-" json:"type"`
 	Name      string    `gorm:"column:input_name" json:"name"`
-	Value     string    `json:"value"`
+	Value     string    `gorm:"-" json:"value"`
 	RawValue  string    `gorm:"column:input_value" json:"-"`
 	Version   int       `json:"version"`
 	CreatedAt time.Time `json:"created_at"`
@@ -48,7 +49,7 @@ func listTables() {
 	}
 }
 
-func listInputVersions(account, array, input_name string) Inputs {
+func ListInputVersions(account, array, input_name string) Inputs {
 	db := DB()
 	var inputs Inputs
 	queryParams := map[string]interface{}{"account_id": account, "array_id": array, "input_name": input_name}
@@ -56,14 +57,14 @@ func listInputVersions(account, array, input_name string) Inputs {
 	return inputs.enrich()
 }
 
-func listInputs(account string, array string) Inputs {
+func ListInputs(account string, array string) Inputs {
 	db := DB()
 	var inputs Inputs
 	db.Table(account).Where("array_id = ? AND account_id = ?", array, account).Find(&inputs)
 	return inputs.enrich()
 }
 
-func listCurrentInputs(account string, array string) Inputs {
+func ListCurrentInputs(account string, array string) Inputs {
 	db := DB()
 	var inputs Inputs
 	q := fmt.Sprintf("SELECT * FROM `%s` t WHERE array_id = t.array_id AND"+
@@ -74,7 +75,7 @@ func listCurrentInputs(account string, array string) Inputs {
 	return inputs.enrich()
 }
 
-func listInputsAsOf(account string, array string, datetime time.Time) Inputs {
+func ListInputsAsOf(account string, array string, datetime time.Time) Inputs {
 	db := DB()
 	var inputs Inputs
 	q := fmt.Sprintf("SELECT * FROM `%s` t WHERE array_id = t.array_id AND"+
@@ -83,4 +84,16 @@ func listInputsAsOf(account string, array string, datetime time.Time) Inputs {
 		" AND array_id = %s AND account_id = %s", account, account, datetime, array, account)
 	db.Table(account).Raw(q).Find(&inputs)
 	return inputs.enrich()
+}
+
+func CreateInput(i Input, populateDate ...bool) {
+	if len(populateDate) > 0 && populateDate[0] {
+		currentTime := time.Now()
+		i.CreatedAt = currentTime
+		i.UpdatedAt = currentTime
+	}
+	//log.Printf("Insert %v",i)
+	db := DB()
+	acc := strconv.Itoa(i.AccountID)
+	db.Table(acc).Create(&i)
 }

@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"github.com/jinzhu/gorm"
@@ -15,7 +15,7 @@ var GDB *gorm.DB
 
 func DB() *gorm.DB {
 	if GDB != nil {
-		log.Println("GDB already defined")
+		//log.Println("GDB already defined")
 		return GDB
 	}
 	db, err := gorm.Open("mysql", os.Getenv("MYSQL_CONNECTION_STRING"))
@@ -29,5 +29,6 @@ func DB() *gorm.DB {
 	GDB = db
 	return db
 }
+
 
 
