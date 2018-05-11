@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/sjeanpierre/SJP_Go_Packages/lib/rightscale"
 	"github.com/sjeanpierre/rs_input_tracker_go/app/models"
 )
@@ -144,7 +145,7 @@ func stringToINT(s string) int {
 	return int(i)
 }
 
-func main() {
+func Handler() (Response,error) {
 	rsToken, tokenOK := os.LookupEnv("RS_REFRESH_TOKEN")
 	rsAccount, accountOK := os.LookupEnv("RS_ACCOUNT_ID")
 	if tokenOK && accountOK {
@@ -153,4 +154,14 @@ func main() {
 		log.Fatalf("ENV var missing.\nPresent:\nRS_REFRESH_TOKEN %v\nRS_ACCOUNT_ID %v", tokenOK, accountOK)
 	}
 
+	return Response{Message:"Audit complete"},nil
+
+}
+
+type Response struct {
+	Message string `json:"message"`
+}
+
+func main() {
+	lambda.Start(Handler)
 }

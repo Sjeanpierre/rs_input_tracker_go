@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"fmt"
 	"time"
 	"log"
 	"os"
@@ -18,6 +19,7 @@ func DB() *gorm.DB {
 		//log.Println("GDB already defined")
 		return GDB
 	}
+	fmt.Print("No DB connection found, opening new one")
 	db, err := gorm.Open("mysql", os.Getenv("MYSQL_CONNECTION_STRING"))
 	if err != nil {
 		log.Fatal(err)
