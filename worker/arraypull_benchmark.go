@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 	"time"
+
 	"github.com/pkg/profile"
 	"github.com/sjeanpierre/SJP_Go_Packages/lib/rightscale"
 )
@@ -43,5 +44,4 @@ func main() {
 	//wg.Add(1)
 	//go s(rs,&wg)
 	p(rs)
-
 }

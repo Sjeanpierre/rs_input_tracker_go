@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"sync"
 
-	"../models"
 	"github.com/sjeanpierre/SJP_Go_Packages/lib/rightscale"
+	"github.com/sjeanpierre/rs_input_tracker_go/app/models"
 )
 
 type inputAudit struct {
@@ -16,7 +16,7 @@ type inputAudit struct {
 	Account     string
 }
 
-func perform(rsToken,rsAccountID string) {
+func perform(rsToken, rsAccountID string) {
 	rs, err := rightscale.New(rsToken, "https://us-3.rightscale.com")
 	//log.Println(rs.BearerToken)
 	//os.Exit(0)
@@ -145,12 +145,12 @@ func stringToINT(s string) int {
 }
 
 func main() {
-	rsToken,tokenOK := os.LookupEnv("RS_REFRESH_TOKEN")
-	rsAccount,accountOK := os.LookupEnv("RS_ACCOUNT_ID")
+	rsToken, tokenOK := os.LookupEnv("RS_REFRESH_TOKEN")
+	rsAccount, accountOK := os.LookupEnv("RS_ACCOUNT_ID")
 	if tokenOK && accountOK {
-		perform(rsToken,rsAccount)
+		perform(rsToken, rsAccount)
 	} else {
-		log.Fatalf("ENV var missing.\nPresent:\nRS_REFRESH_TOKEN %v\nRS_ACCOUNT_ID %v",tokenOK,accountOK)
+		log.Fatalf("ENV var missing.\nPresent:\nRS_REFRESH_TOKEN %v\nRS_ACCOUNT_ID %v", tokenOK, accountOK)
 	}
 
 }
