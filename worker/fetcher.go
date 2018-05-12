@@ -102,7 +102,7 @@ func writeInputsToDB(ia *inputAudit) {
 func populateArrays(arrays rightscale.ServerArrays, account int) {
 	var exists rightscale.ServerArrays
 	var nouveau rightscale.ServerArrays
-	currentArrays := models.ListAllArrays()
+	currentArrays := models.ListArraysByAccount(account)
 	//split arrays into exist, and nouveau buckets existing
 	for _, array := range arrays {
 		arrayID, err := array.ArrayID()

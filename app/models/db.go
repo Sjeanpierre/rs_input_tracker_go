@@ -11,12 +11,8 @@ import (
 
 var GDB *gorm.DB
 
-//specify needed tablename
-//http://gorm.io/docs/conventions.html#Specifying-The-Table-Name
-
 func DB() *gorm.DB {
 	if GDB != nil {
-		//log.Println("GDB already defined")
 		return GDB
 	}
 	fmt.Print("No DB connection found, opening new one")

@@ -3,7 +3,7 @@ export default {
     this.setVars();
     this.fetchInputData();
     this.fetchArrayDetails();
-    this.fetchArrayCount();
+    // this.fetchArrayCount();
     this.fetchAccountDetails();
   },
   methods: {
@@ -42,6 +42,7 @@ export default {
           this.$http.get(`${process.env.API_URL}/api/accounts/${account}/arrays/${array}/inputs`).then((response) => {
             console.log(response.body);
           this.items = response.body;
+          this.input_count = this.items.length
           this.datatable_loading = false;
         });
 
@@ -112,6 +113,7 @@ export default {
       account_name: "",
       account_id: "",
       array_count: "",
+      input_count: "",
       array_details: "",
       datatable_loading: true,
       headers: [

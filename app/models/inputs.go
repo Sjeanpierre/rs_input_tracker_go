@@ -8,7 +8,6 @@ import (
 	"fmt"
 )
 
-//todo add JSON tags
 type Input struct {
 	ID        int       `json:"-"`
 	AccountID int       `json:"account_id"`
@@ -92,7 +91,6 @@ func CreateInput(i Input, populateDate ...bool) {
 		i.CreatedAt = currentTime
 		i.UpdatedAt = currentTime
 	}
-	//log.Printf("Insert %v",i)
 	db := DB()
 	acc := strconv.Itoa(i.AccountID)
 	db.Table(acc).Create(&i)

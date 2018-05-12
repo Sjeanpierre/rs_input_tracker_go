@@ -9,7 +9,7 @@ export default {
       headers: [
         {text: 'Name', value: 'array_name'},
         {text: 'Array ID', value: 'array_id',align: 'center'},
-        {text: 'Righgtscale Link',align: 'center', sortable: false}
+        {text: 'Rightscale Link',align: 'center', sortable: false}
       ],
       items: [],
     }
@@ -63,7 +63,7 @@ export default {
     },
     fetchAccountDetails() {
       {
-        let account = this.$route.params.account_id
+        let account = this.$route.params.account_id;
         if (typeof account !== 'undefined' && account) {
           this.$http.get(`${process.env.API_URL}/api/accounts/${account}`).then((response) => {
             console.log(response.body);
@@ -73,7 +73,8 @@ export default {
       }
     },
     rightscaleLink(array_id) {
-      let url = `https://my.rightscale.com/acct/${this.account_id}/server_arrays/${array_id}`
+      let account = this.$route.params.account_id;
+      let url = `https://my.rightscale.com/acct/${account}/server_arrays/${array_id}`
       return {
         href: url,
         target: '_blank',

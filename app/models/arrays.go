@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -15,10 +16,31 @@ type Array struct {
 
 type Arrays []Array
 
-func ListArrays(account string) Arrays {
+func ListArraysByAccount(account int) Arrays {
 	db := DB()
 	var arrays Arrays
 	db.Table("server_arrays").Where("account_id = ?", account).Find(&arrays)
+	return arrays
+}
+
+func ListCurrentArraysByAccount(account string)  Arrays{
+	db := DB()
+	var arrays Arrays
+	q := fmt.Sprintf("select * from server_arrays sa" + " where account_id = %s AND created_at ="+
+		" (select MAX(created_at) from server_arrays where array_id = sa.array_id)",account)
+	db.Table("server_arrays").Raw(q).Find(&arrays)
+	return arrays
+}
+
+func ListArrayVersions(account,array string)  Arrays{
+	db := DB()
+	var arrays Arrays
+	q := fmt.Sprintf("SELECT c.*, repeated FROM" +
+		" (SELECT array_id, COUNT(array_id) AS repeated FROM" +
+		" preprod_inputtracker.server_arrays GROUP BY array_id)" +
+		" AS sa JOIN server_arrays c ON sa.array_id = c.array_id WHERE c.array_id = %s" +
+		" AND c.account_id = %s",array,account)
+	db.Table("server_arrays").Raw(q).Find(&arrays)
 	return arrays
 }
 
