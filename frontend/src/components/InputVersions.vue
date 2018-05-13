@@ -5,17 +5,17 @@
   <v-app id="inspire">
     <v-navigation-drawer width="210" fixed clipped class="blue darken-3 application theme--dark" app v-model="drawer">
 
-      <!--start bullshit-->
+      <!--start level display-->
       <v-list dense class="blue darken-3 info-list">
-          <v-divider dark class="my-3"></v-divider>
-          <v-list-tile>
-            <v-list-tile-content>
-              <v-list-tile-title class="white--text">
-                {{this.account_name}}
-              </v-list-tile-title>
-              <v-icon color="white">arrow_downward</v-icon>
-            </v-list-tile-content>
-          </v-list-tile>
+        <v-divider dark class="my-3"></v-divider>
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title class="white--text">
+              {{this.account_name}}
+            </v-list-tile-title>
+            <v-icon color="white">arrow_downward</v-icon>
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile>
           <v-list-tile-content>
             <v-list-tile-title class="white--text">
@@ -32,8 +32,7 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-      <!--end bullshit-->
-
+      <!--end level display-->
 
       <v-list dense class="blue darken-3">
         <!--left side menu-->
@@ -91,7 +90,12 @@
           <template slot="items" slot-scope="props">
             <td class="text-xs-left">{{ props.item.version }}</td>
             <td class="text-xs-left">{{ props.item.type }}</td>
-            <td class="text-xs-left">{{ props.item.created_at}}</td>
+            <td class="text-xs-left">
+              <v-tooltip bottom>
+                <span slot="activator">{{ format_date_as_ago(props.item.created_at)}}</span>
+                <span>{{ format_date_as_ago_long(props.item.created_at)}}</span>
+              </v-tooltip>
+            </td>
             <td class="text-xs-left">{{ props.item.value }}</td>
           </template>
           <v-alert slot="no-results" :value="true" color="error" icon="warning">
