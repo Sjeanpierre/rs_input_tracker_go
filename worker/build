@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ -z ${ACCOUNT_ID+x}]; then
+  echo Missing env var ACCOUNT_ID
+  exit
+fi
+make -B
+RS_ACCOUNT_ID=$ACCOUNT_ID sls deploy
+rm -fr bin

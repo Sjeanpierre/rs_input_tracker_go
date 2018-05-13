@@ -21,7 +21,7 @@ functions:
   fetch_elsm_acct:
     handler: bin/fetcher
     events:
-      - schedule: rate(15 minutes)
+      - schedule: rate(45 minutes)
     environment:
       MYSQL_CONNECTION_STRING: ${env:LIVE_MYSQL_CONNECTION_STRING}
       RS_REFRESH_TOKEN: ${env:RS_REFRESH_TOKEN}
