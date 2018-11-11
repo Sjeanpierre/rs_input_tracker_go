@@ -31,6 +31,13 @@ export default {
         }
       }
     },
+    lastUpdatedInDays(array) {
+      let updated = Date.parse(array.updated_at)
+      let now = Date.now()
+      Math.abs(now - updated)
+      let TimeDiff = Math.abs(now - updated)
+      return Math.ceil(TimeDiff / (1000 * 3600 * 24))
+    },
     fetchInputData() {
       {
         let account = this.$route.params.account_id;
@@ -54,7 +61,19 @@ export default {
         {
           this.$http.get(`${process.env.API_URL}/api/accounts/${account}/arrays`).then((response) => {
             console.log(response.body);
-          this.items = response.body;
+          let elements = [];
+          let ref = this; //I keep the this context prior to entering the loop, which would change the meaning of this
+          //to reduce noise I want to only include arrays that have been audited in the past 5 days
+          response.body.forEach(function (element) {
+            if (ref.lastUpdatedInDays(element) < 5) {
+              elements.push(element)
+            }
+          });
+          if (elements.length !== 0) {
+            this.items = elements;
+          } else {
+            this.items = response.body;
+          }
           this.array_list_loading = false;
         });
 
