@@ -20,4 +20,5 @@ RUN wget -O- https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.
 COPY ./argo_tunnel.pem.enc /app/
 COPY ./startup.sh /app/
 COPY ./bin/input_tracker_app /app/
+EXPOSE 9080
 ENTRYPOINT ["./startup.sh"]
