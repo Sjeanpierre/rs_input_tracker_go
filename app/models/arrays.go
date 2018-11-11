@@ -93,11 +93,7 @@ func (arrays Arrays) Exists(acct int, arrayID int) bool {
 }
 
 func (arrays Arrays) FindArrayByAccountArrayID(acct int, arrayID int) Array {
-	matched := arrays.filterByArrayID(arrayID).filterByAccount(acct)
-	if len(matched) != 0 {
-		return matched[0]
-	}
-	return Array{}
+	return arrays.filterByArrayID(arrayID).filterByAccount(acct).filterLatest()
 }
 
 func (arrays Arrays) filterByAccount(accountID int) Arrays {
@@ -118,4 +114,14 @@ func (arrays Arrays) filterByArrayID(ArrayID int) Arrays {
 		}
 	}
 	return a2
+}
+
+func (arrays Arrays) filterLatest() Array  {
+	var a Array
+	for _, arr := range arrays {
+		if arr.ID > a.ID {
+			a = arr
+		}
+	}
+	return a
 }
