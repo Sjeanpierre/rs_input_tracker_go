@@ -50,3 +50,11 @@ func getArrayEndpoint(c *gin.Context)  {
 	array := models.GetArray(account,a)
 	c.JSON(200,array)
 }
+
+func compareArrayInputs(c *gin.Context)  {
+	account := c.Param("account_id")
+	a1 := c.Param("array_1")
+	a2 := c.Param("array_2")
+	diff := models.CompareArrayInputs(account,a1,a2)
+	c.JSON(200,diff)
+}

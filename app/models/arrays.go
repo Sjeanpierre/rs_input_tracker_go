@@ -54,7 +54,7 @@ func ListAllArrays() Arrays {
 func GetArray(account string, array string) Array {
 	db := DB()
 	var a Array
-	db.Table("server_arrays").Where("account_id = ? AND array_id = ?", account, array).First(&a)
+	db.Table("server_arrays").Where("account_id = ? AND array_id = ?", account, array).Last(&a)
 	return a
 }
 

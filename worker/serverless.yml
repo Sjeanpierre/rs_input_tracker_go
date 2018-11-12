@@ -24,6 +24,27 @@ functions:
       - schedule: rate(45 minutes)
     environment:
       MYSQL_CONNECTION_STRING: ${env:LIVE_MYSQL_CONNECTION_STRING}
-      RS_REFRESH_TOKEN: ${env:RS_REFRESH_TOKEN}
-      RS_ACCOUNT_ID: ${env:RS_ACCOUNT_ID}
+      RS_REFRESH_TOKEN: ${env:RS_ELSM_REFRESH_TOKEN}
+      RS_ACCOUNT_ID: ${env:RS_ELSM_ACCOUNT_ID}
+      RS_ACCOUNT_ENDPOINT: "https://us-3.rightscale.com"
+    timeout: 300
+  fetch_gcc_acct:
+    handler: bin/fetcher
+    events:
+    - schedule: rate(45 minutes)
+    environment:
+      MYSQL_CONNECTION_STRING: ${env:LIVE_MYSQL_CONNECTION_STRING}
+      RS_REFRESH_TOKEN: ${env:RS_GCC_REFRESH_TOKEN}
+      RS_ACCOUNT_ID: ${env:RS_GCC_ACCOUNT_ID}
+      RS_ACCOUNT_ENDPOINT: "https://us-4.rightscale.com"
+    timeout: 300
+  fetch_s1naprod_acct:
+    handler: bin/fetcher
+    events:
+    - schedule: rate(45 minutes)
+    environment:
+      MYSQL_CONNECTION_STRING: ${env:LIVE_MYSQL_CONNECTION_STRING}
+      RS_REFRESH_TOKEN: ${env:RS_S1NAPROD_REFRESH_TOKEN}
+      RS_ACCOUNT_ID: ${env:RS_S1NAPROD_ACCOUNT_ID}
+      RS_ACCOUNT_ENDPOINT: "https://us-4.rightscale.com"
     timeout: 300

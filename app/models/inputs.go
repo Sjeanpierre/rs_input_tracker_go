@@ -85,6 +85,46 @@ func ListInputsAsOf(account string, array string, datetime time.Time) Inputs {
 	return inputs.enrich()
 }
 
+func CompareArrayInputs(account,array1,array2 string)  map[string]Inputs{
+	ar1 := ListCurrentInputs(account,array1)
+	ar2 := ListCurrentInputs(account,array2)
+	missingFromAR1 := ar1.diff(ar2)
+	missingFromAR2 := ar2.diff(ar1)
+	allMissing := append(missingFromAR1,missingFromAR2...)
+	// ar1 = 1234
+	// ar2 = 1256
+	// ar1.diff(ar2) = 5,6
+	// ar2.diff(ar1) = 3,4
+	ret := make(map[string]Inputs)
+	a1 := make(map[string]Input)
+	a2 := make(map[string]Input)
+	for _, input := range ar1 {a1[input.Name] = input}
+	for _, input := range ar2 {a2[input.Name] = input}
+	for _, ipt := range allMissing {
+		ret[ipt.Name] = Inputs{a1[ipt.Name],a2[ipt.Name]}
+	}
+	return ret
+}
+
+func (ar1 Inputs) diff(ar2 Inputs) Inputs{
+	lookUp := make(map[string]bool)
+	for _, input := range ar1 {
+		lookUp[input.inputSignature()]=true
+	}
+	var missing Inputs //exists in ar2, but not ar1
+	for _, input := range ar2 {
+		_, ok := lookUp[input.inputSignature()]
+		if !ok {
+			missing = append(missing,input)
+		}
+	}
+	return missing
+}
+
+func (i Input) inputSignature() string{
+	return fmt.Sprintf("%s|%s|%s",i.Name,i.Type,i.Value)
+}
+
 func CreateInput(i Input, populateDate ...bool) {
 	if len(populateDate) > 0 && populateDate[0] {
 		currentTime := time.Now()

@@ -17,8 +17,8 @@ type inputAudit struct {
 	Account     string
 }
 
-func perform(rsToken, rsAccountID string) {
-	rs, err := rightscale.New(rsToken, "https://us-3.rightscale.com")
+func perform(rsToken, rsAccountID, rsEndpoint string) {
+	rs, err := rightscale.New(rsToken, rsEndpoint)
 	//log.Println(rs.BearerToken)
 	//os.Exit(0)
 	if err != nil {
@@ -148,10 +148,12 @@ func stringToINT(s string) int {
 func Handler() (Response,error) {
 	rsToken, tokenOK := os.LookupEnv("RS_REFRESH_TOKEN")
 	rsAccount, accountOK := os.LookupEnv("RS_ACCOUNT_ID")
-	if tokenOK && accountOK {
-		perform(rsToken, rsAccount)
+	rsEndpoint,endpointOK := os.LookupEnv("RS_ACCOUNT_ENDPOINT")
+	if tokenOK && accountOK && endpointOK {
+		perform(rsToken, rsAccount, rsEndpoint)
 	} else {
-		log.Fatalf("ENV var missing.\nPresent:\nRS_REFRESH_TOKEN %v\nRS_ACCOUNT_ID %v", tokenOK, accountOK)
+		log.Fatalf("ENV var missing.\nPresent:\nRS_REFRESH_TOKEN" +
+			" %v\nRS_ACCOUNT_ID %v\n RS_ACCOUNT_ENDPOINT %v ", tokenOK, accountOK,endpointOK)
 	}
 
 	return Response{Message:"Audit complete"},nil
