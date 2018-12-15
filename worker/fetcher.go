@@ -29,6 +29,10 @@ func perform(rsToken, rsAccountID, rsEndpoint string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	//open new DB connection here to avoid thundering herd from the go routines
+	//if we wait until we are down in the go routine to open the new connection then they will all do so simultaneously
+	log.Println("Establishing DB connection")
+	_ = models.ListAccounts()
 	acct := rsAccountID
 	var wg sync.WaitGroup
 	for _, a := range ArrayList {
@@ -62,7 +66,8 @@ func writeInputsToDB(ia *inputAudit) {
 		return
 	}
 	//get list of latest inputs to allow value compare - using account_id,array_id
-	currentInputList := models.ListCurrentInputs(ia.Account, arrayID)
+	//also includes inactive inputs to prevent creating new series for ones that were previously present then inactivated
+	currentInputList := models.ListCurrentInputsWithInactive(ia.Account, arrayID)
 	inputMap := make(map[string]models.Input)
 	for _, input := range currentInputList {
 		inputMap[input.Name] = input
@@ -76,27 +81,62 @@ func writeInputsToDB(ia *inputAudit) {
 		input, ok := inputMap[newInput.Name]
 		if !ok {
 			//input by this name does not yet exist, we can create it and exit this iteration of the loop
-			array, _ := strconv.ParseInt(arrayID, 10, 0)
-			accID, _ := strconv.ParseInt(ia.Account, 10, 0)
+			array := stringToINT(arrayID)
+			accID := stringToINT(ia.Account)
 			ni := models.Input{ArrayID: int(array), AccountID: int(accID), RawValue: newInput.Value, Name: newInput.Name, Version: 1}
 			models.CreateInput(ni, true)
 			continue
 		}
+		if input.Inactive {
+			//Previous series of input had been marked as inactive
+			//input is now present reactivating the series
+			models.ReactivateInput(input)
+		}
 		if input.RawValue != newInput.Value {
 			//input exists,but the value has changed from the last audited value, increment version and insert new record
-			array, _ := strconv.ParseInt(arrayID, 10, 0)
-			accID, _ := strconv.ParseInt(ia.Account, 10, 0)
+			array := stringToINT(arrayID)
+			accID := stringToINT(ia.Account)
 			v := input.Version + 1
 			newInput := models.Input{ArrayID: int(array), AccountID: int(accID), RawValue: newInput.Value, Name: newInput.Name, Version: v}
 			models.CreateInput(newInput, true)
 			continue
 		} else {
 			//input was found and value was not changed.
-			//need to consider the implication for removed inputs as they
-			//are not accounted for in this current set of if statements
 			//log.Printf("Skipping: %s Reason: unchanged", newInput.Name)
 		}
 	}
+	//determine which records have been removed and should be marked as dead records
+	//add tombstone record with incremented version
+	//if the latest version of an input is a tombstone record, then omit it from the results
+	missingInputs := findMissingInputs(ia.ArrayInputs,currentInputList)
+	for _, missingInput := range missingInputs {
+		log.Printf("Notice: Input %s is missing from array %s",missingInput.Name,ia.Array.Name)
+		v := missingInput.Version + 1
+		newInput := models.Input{ArrayID: missingInput.ArrayID, AccountID: missingInput.AccountID,
+			RawValue: missingInput.RawValue, Name: missingInput.Name, Version: v}
+		models.CreateInactiveInputRecord(newInput, true)
+	}
+}
+
+//determine which records have been removed and should be marked as dead records
+//compare the current inputs against the new set pulled in
+//check if an input exists in the current set, but does not exist in the new set
+//create new record for that input with same values as last highest version
+//set deleted flag to true
+//all functions seeking to determine latest arrays should omit records with deleted = true
+func findMissingInputs(new rightscale.Inputs, old models.Inputs) models.Inputs {
+	var missing models.Inputs
+	newInputMap := make(map[string]rightscale.Input) //stores newInput map for quick lookup
+	for _, newInput := range new {
+		newInputMap[newInput.Name] = newInput
+	}
+	for _, oldInput := range old {
+		_, ok := newInputMap[oldInput.Name]
+		if !ok && !oldInput.Inactive { //if missing and active
+			missing = append(missing,oldInput)
+		}
+	}
+	return missing
 }
 
 func populateArrays(arrays rightscale.ServerArrays, account int) {
