@@ -3,7 +3,17 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sjeanpierre/rs_input_tracker_go/app/models"
+	"net/http"
 )
+
+var (
+	missingPostData = map[string]string{"error":"param ignored missing from body"}
+	errorPostData = map[string]string{"error":"could not parse post body"}
+)
+
+type comparePostJSON struct {
+	Ignored []string `json:"ignored"`
+}
 
 func listArrayInputsEndpoint(c *gin.Context) {
 	account := c.Param("account_id")
@@ -57,4 +67,32 @@ func compareArrayInputs(c *gin.Context)  {
 	a2 := c.Param("array_2")
 	diff := models.CompareArrayInputs(account,a1,a2)
 	c.JSON(200,diff)
+}
+
+//Compares arrays to each other
+//Allows list to be supplied which indicate which differences should be ignored
+//If differences are found beyond ignore list, status code 417 is raised (Expectation Failed)
+func compareArrayInputsPost(c *gin.Context)  {
+	var postData comparePostJSON
+	err := c.BindJSON(&postData)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity,errorPostData)
+		return
+	}
+	if postData.Ignored == nil {
+		c.JSON(http.StatusUnprocessableEntity,missingPostData)
+		return
+	}
+	account := c.Param("account_id")
+	a1 := c.Param("array_1")
+	a2 := c.Param("array_2")
+	diff := models.CompareArrayInputs(account,a1,a2)
+	for _, ignoredItem := range postData.Ignored {
+		delete(diff,ignoredItem)
+	}
+	if len(diff) != 0 {
+		c.JSON(http.StatusExpectationFailed,diff)
+		return
+	}
+	c.JSON(http.StatusOK,diff)
 }
