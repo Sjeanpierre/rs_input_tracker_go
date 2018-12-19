@@ -9,7 +9,7 @@ export default {
       headers: [
         {text: 'Name', value: 'array_name'},
         {text: 'Array ID', value: 'array_id',align: 'center'},
-        {text: 'Righgtscale Link',align: 'center', sortable: false}
+        {text: 'Rightscale Link',align: 'center', sortable: false}
       ],
       items: [],
     }
@@ -30,6 +30,13 @@ export default {
         });
         }
       }
+    },
+    lastUpdatedInDays(array) {
+      let updated = Date.parse(array.updated_at)
+      let now = Date.now()
+      Math.abs(now - updated)
+      let TimeDiff = Math.abs(now - updated)
+      return Math.ceil(TimeDiff / (1000 * 3600 * 24))
     },
     fetchInputData() {
       {
@@ -54,7 +61,19 @@ export default {
         {
           this.$http.get(`${process.env.API_URL}/api/accounts/${account}/arrays`).then((response) => {
             console.log(response.body);
-          this.items = response.body;
+          let elements = [];
+          let ref = this; //I keep the this context prior to entering the loop, which would change the meaning of this
+          //to reduce noise I want to only include arrays that have been audited in the past 5 days
+          response.body.forEach(function (element) {
+            if (ref.lastUpdatedInDays(element) < 5) {
+              elements.push(element)
+            }
+          });
+          if (elements.length !== 0) {
+            this.items = elements;
+          } else {
+            this.items = response.body;
+          }
           this.array_list_loading = false;
         });
 
@@ -63,7 +82,7 @@ export default {
     },
     fetchAccountDetails() {
       {
-        let account = this.$route.params.account_id
+        let account = this.$route.params.account_id;
         if (typeof account !== 'undefined' && account) {
           this.$http.get(`${process.env.API_URL}/api/accounts/${account}`).then((response) => {
             console.log(response.body);
@@ -73,7 +92,8 @@ export default {
       }
     },
     rightscaleLink(array_id) {
-      let url = `https://my.rightscale.com/acct/${this.account_id}/server_arrays/${array_id}`
+      let account = this.$route.params.account_id;
+      let url = `https://my.rightscale.com/acct/${account}/server_arrays/${array_id}`
       return {
         href: url,
         target: '_blank',

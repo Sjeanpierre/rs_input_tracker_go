@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+cd ..
+GOOS=linux go build -ldflags="-s -w" -o build/bin/input_tracker_app
+cd -
+docker build -t input_tracker .
+docker run -p 9080:9080 --rm -it --env-file ../.env input_tracker
+rm -fr ./bin

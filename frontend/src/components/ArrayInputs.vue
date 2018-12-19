@@ -10,7 +10,7 @@
         <v-list-tile>
           <div style="display: block;margin:  auto;">
             <div class="info-list subheading">{{this.account_name}}</div>
-            <div class="info-list"><v-flex offset>Array Count: {{this.array_count}}</v-flex></div>
+            <div class="info-list"><v-flex offset>Input Count: {{this.input_count}}</v-flex></div>
             <div class="info-list offset-xs1">
               <v-tooltip bottom light>
                 <v-flex offset slot="activator">Refreshed: {{array_last_updated_date}}</v-flex>

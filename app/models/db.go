@@ -1,23 +1,20 @@
-package main
+package models
 
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"time"
 	"log"
 	"os"
+	"time"
 )
 
 var GDB *gorm.DB
 
-//specify needed tablename
-//http://gorm.io/docs/conventions.html#Specifying-The-Table-Name
-
 func DB() *gorm.DB {
 	if GDB != nil {
-		log.Println("GDB already defined")
 		return GDB
 	}
+	log.Println("No DB connection found, opening new one")
 	db, err := gorm.Open("mysql", os.Getenv("MYSQL_CONNECTION_STRING"))
 	if err != nil {
 		log.Fatal(err)
@@ -29,5 +26,6 @@ func DB() *gorm.DB {
 	GDB = db
 	return db
 }
+
 
 

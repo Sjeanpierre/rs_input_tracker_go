@@ -63,6 +63,20 @@ export default {
         }
       }
     },
+    format_date_as_ago(date) {
+      let rDate = date;
+      if (typeof rDate !== 'undefined' && rDate) {
+        var m = this.moment(rDate,"YYYY-MM-DD HH:mm:ssZ");
+        return m.fromNow();
+      }
+    },
+    format_date_as_ago_long(date) {
+      let rDate = date;
+      if (typeof rDate !== 'undefined' && rDate) {
+        var m = this.moment(rDate,"YYYY-MM-DD HH:mm:ssZ");
+        return m.calendar();
+      }
+    },
   },
   data() {
     return {
