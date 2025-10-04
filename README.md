@@ -152,12 +152,52 @@ The application uses MySQL with the following main tables:
 3. **API Layer**: Gin-based REST API serves data to frontend
 4. **Frontend**: Vue.js SPA provides user interface
 
+## Quick Start
+
+1. **Clone and setup**:
+   ```bash
+   git clone https://github.com/sjeanpierre/rs_input_tracker_go.git
+   cd rs_input_tracker_go
+   cp .env.example .env
+   # Edit .env with your credentials
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   make install-deps
+   ```
+
+3. **Run locally**:
+   ```bash
+   # Terminal 1: API Server
+   make run-api
+   
+   # Terminal 2: Frontend
+   make run-frontend
+   ```
+
+4. **Access the application**:
+   - Frontend: http://localhost:8080
+   - API: http://localhost:9080/api
+
+For detailed commands, see [QUICKREF.md](QUICKREF.md).
+
+## Documentation
+
+- **[README.md](README.md)** (this file) - Project overview and quick start
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development guidelines and best practices
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deployment guide for all environments
+- **[QUICKREF.md](QUICKREF.md)** - Quick reference for common tasks
+- **[ORGANIZATIONAL_IMPROVEMENTS.md](ORGANIZATIONAL_IMPROVEMENTS.md)** - Recommended organizational improvements
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Code organization guidelines
+- Development workflow
+- Code quality standards
+- How to submit changes
 
 ## License
 
@@ -165,4 +205,10 @@ The application uses MySQL with the following main tables:
 
 ## Support
 
-[Add support/contact information]
+- **Documentation**: See the docs listed above
+- **Issues**: Open an issue on GitHub
+- **Questions**: Check [QUICKREF.md](QUICKREF.md) for common tasks
+
+## Roadmap
+
+See [ORGANIZATIONAL_IMPROVEMENTS.md](ORGANIZATIONAL_IMPROVEMENTS.md) for planned improvements to project structure and organization.
